@@ -1,0 +1,33 @@
+# Install and load necessary packages
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+library(ggplot2)
+
+setwd("C:\\Users\\Gobin\\Downloads")
+
+# Replace 'your_file.csv' with the actual file path and name
+file_path <- "C:\\Users\\Gobin\\Downloads\\DEGs_totall.csv"
+
+# Read data from CSV file
+data <- read.csv(file_path, header = TRUE)
+
+
+# Set thresholds for significant genes
+logFC_threshold <- 1
+pvalue_threshold <- 0.05
+
+# Create a volcano plot with modified dot sizes and colors
+ggplot(data, aes(x = logFC, y = -log10(PValue))) +
+  geom_point(aes(color = ifelse(logFC > logFC_threshold & PValue < pvalue_threshold, "red",
+                                ifelse(logFC < -logFC_threshold & PValue < pvalue_threshold, "blue", "black"))),
+             size = 1) +  # Adjust the dot size as needed
+  geom_hline(yintercept = -log10(pvalue_threshold), linetype = "dashed", color = "blue") +
+  geom_vline(xintercept = c(-logFC_threshold, logFC_threshold), linetype = "dashed", color = "blue") +
+  scale_color_identity() +  # Use default colors based on conditions
+  labs(title = "Volcano Plot",
+       x = "log Fold Change",
+       y = "-log10(P-Value)",
+       color = "Regulation") +
+  theme_minimal() +
+  coord_cartesian(ylim = c(0, 18)) 
